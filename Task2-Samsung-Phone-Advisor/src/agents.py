@@ -1,4 +1,13 @@
+import re
 from src.rag_db import find_phone_by_name
+
+
+def _clean_part(s: str) -> str:
+    s = (s or "").strip()
+    # remove extra words that break matching
+    s = re.sub(r'^\s*(compare|vs\.?|versus|between)\s+', '', s, flags=re.I)
+    s = re.sub(r'^\s*(specs of|details of|info about)\s+', '', s, flags=re.I)
+    return s.strip(" :-,.")
 
 
 def answer_question_text(question: str) -> str:
@@ -7,11 +16,17 @@ def answer_question_text(question: str) -> str:
         return "Please type a question."
 
     low = q.lower()
-    
-    if "compare" in low and "and" in low:
-        parts = q.replace("Compare", "").split("and")
-        left = parts[0].strip()
-        right = parts[1].strip()
+
+    # ✅ Compare mode (handles compare/Compare, and/And, vs/versus)
+    if "compare" in low:
+        cleaned = re.sub(r'^\s*compare\s+', '', q, flags=re.I)
+
+        parts = re.split(r'\s+(?:and|vs\.?|versus)\s+', cleaned, flags=re.I, maxsplit=1)
+        if len(parts) < 2:
+            return "Please write like: Compare S25 and S25+"
+
+        left = _clean_part(parts[0])
+        right = _clean_part(parts[1])
 
         p1 = find_phone_by_name(left)
         p2 = find_phone_by_name(right)
@@ -44,7 +59,8 @@ def answer_question_text(question: str) -> str:
 
         return "\n".join(lines)
 
-    phone = find_phone_by_name(q)
+    # ✅ Single phone lookup
+    phone = find_phone_by_name(_clean_part(q))
     if not phone:
         return "I could not find that phone. Try typing: 'S25', 'S25+', 'A36'."
 
