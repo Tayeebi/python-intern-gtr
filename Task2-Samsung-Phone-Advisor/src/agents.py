@@ -7,8 +7,7 @@ def answer_question_text(question: str) -> str:
         return "Please type a question."
 
     low = q.lower()
-
-    # compare mode
+    
     if "compare" in low and "and" in low:
         parts = q.replace("Compare", "").split("and")
         left = parts[0].strip()
@@ -20,7 +19,6 @@ def answer_question_text(question: str) -> str:
         if not p1 or not p2:
             return "I could not find one of those phones. Try: 'S25', 'S25+', 'A36'."
 
-        # smooth organized text
         lines = []
         lines.append(f"Comparison: {p1['model_name']} vs {p2['model_name']}\n")
 
@@ -46,7 +44,6 @@ def answer_question_text(question: str) -> str:
 
         return "\n".join(lines)
 
-    # single phone mode
     phone = find_phone_by_name(q)
     if not phone:
         return "I could not find that phone. Try typing: 'S25', 'S25+', 'A36'."

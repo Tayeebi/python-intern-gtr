@@ -19,14 +19,10 @@ def normalize_model_name(q: str) -> str:
 
     low = q.lower()
 
-    # If user already typed "samsung", keep it
     if "samsung" in low:
         return q
 
-    # If user typed like "S25", "S25+", "A36", "M06", etc.
-    # most Samsung phones in DB start with "Samsung Galaxy ..."
-    # so we prefix "Samsung Galaxy "
-    # (works for your current scraped data)
+ 
     return "Samsung Galaxy " + q
 
 
@@ -42,7 +38,6 @@ def find_phone_by_name(name: str):
     db = psycopg2.connect(DB_DSN)
     cur = db.cursor()
 
-    # Find best match
     cur.execute(
         """
         SELECT model_name, url, release_date, display, battery, camera, ram, storage, price, scraped_at

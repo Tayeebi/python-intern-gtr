@@ -37,132 +37,179 @@ Task2-Samsung-Phone-Advisor/
 │  └─ scrape_one.py
 ├─ .venv/
 └─ README.md
-✅ Setup (One Time)
-1) Create & activate virtual environment
-bash
-Copy code
+```
+
+---
+
+## ✅ Setup (One Time)
+
+### 1) Create & activate virtual environment
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
-2) Install dependencies
-If you have requirements.txt:
+```
 
-bash
-Copy code
+### 2) Install dependencies
+
+If you have `requirements.txt`:
+
+```bash
 pip install -r requirements.txt
+```
+
 If not, install manually:
 
-bash
-Copy code
+```bash
 pip install requests beautifulsoup4 psycopg2-binary fastapi uvicorn
-🗄️ PostgreSQL Setup
-1) Create database
-bash
-Copy code
-createdb samsung_db
-2) Check DB connection
-bash
-Copy code
-psql -U tayeebi -d samsung_db -c "SELECT 1;"
-👀 Check What’s Saved in DB
-Count rows
-bash
-Copy code
-psql -U tayeebi -d samsung_db -c "SELECT COUNT(*) FROM phones;"
-View latest 10 saved rows
-bash
-Copy code
-psql -U tayeebi -d samsung_db -c "SELECT id, model_name, url, ram, storage, price, scraped_at FROM phones ORDER BY id DESC LIMIT 10;"
-🧹 Reset / Delete Old Data (Optional)
-⚠️ This deletes everything from phones and resets ID.
+```
 
-bash
-Copy code
+---
+
+## 🗄️ PostgreSQL Setup
+
+### 1) Create database
+
+```bash
+createdb samsung_db
+```
+
+### 2) Check DB connection
+
+```bash
+psql -U tayeebi -d samsung_db -c "SELECT 1;"
+```
+
+---
+
+## 👀 Check What’s Saved in DB
+
+### Count rows
+
+```bash
+psql -U tayeebi -d samsung_db -c "SELECT COUNT(*) FROM phones;"
+```
+
+### View latest 10 saved rows
+
+```bash
+psql -U tayeebi -d samsung_db -c "SELECT id, model_name, url, ram, storage, price, scraped_at FROM phones ORDER BY id DESC LIMIT 10;"
+```
+
+---
+
+## 🧹 Reset / Delete Old Data (Optional)
+
+⚠️ This deletes everything from `phones` and resets ID.
+
+```bash
 psql -U tayeebi -d samsung_db -c "TRUNCATE TABLE phones RESTART IDENTITY;"
+```
+
 Confirm it’s empty:
 
-bash
-Copy code
+```bash
 psql -U tayeebi -d samsung_db -c "SELECT COUNT(*) FROM phones;"
-🕷️ Scrape Samsung Phones (20–30 phones)
+```
+
+---
+
+## 🕷️ Scrape Samsung Phones (20–30 phones)
+
 Run the scraper:
 
-bash
-Copy code
+```bash
 python src/scrape_phone_data.py
+```
+
 Expected output example:
 
-txt
-Copy code
+```txt
 Reading list page 1...
 Links found: 30
 [1/30] Saved ✅: Samsung Galaxy A07
 ...
 Done ✅ New saved: 30
+```
+
 Verify rows:
 
-bash
-Copy code
+```bash
 psql -U tayeebi -d samsung_db -c "SELECT COUNT(*) FROM phones;"
-🚀 Run the API Server
+```
+
+---
+
+## 🚀 Run the API Server
+
 Start FastAPI:
 
-bash
-Copy code
+```bash
 uvicorn src.api:app --reload
+```
+
 You should see:
 
-txt
-Copy code
+```txt
 Uvicorn running on http://127.0.0.1:8000
+```
+
 Open Swagger UI:
 
-txt
-Copy code
+```txt
 http://127.0.0.1:8000/docs
-🧪 Test the API
-1) Compare two phones
-Request JSON
+```
 
-json
-Copy code
+---
+
+## 🧪 Test the API
+
+### 1) Compare two phones
+
+Request JSON:
+
+```json
 {
   "question": "Compare S25 and S25+"
 }
-Curl command
+```
 
-bash
-Copy code
+Curl command:
+
+```bash
 curl -X POST "http://127.0.0.1:8000/ask" \
   -H "Content-Type: application/json" \
   -d '{"question":"Compare S25 and S25+"}'
+```
+
 ✅ Expected result:
 
-If both phones exist in DB → returns a comparison answer
+- If both phones exist in DB → returns a comparison answer  
+- If not found → tells you to try a clearer model name
 
-If not found → tells you to try a clearer model name
+---
 
-🛠️ Common Commands
-Stop the server / stop running code
-Press:
+## 🛠️ Common Commands
 
-txt
-Copy code
+### Stop the server / stop running code
+
+```txt
 CTRL + C
-Check if API is running
-bash
-Copy code
+```
+
+### Check if API is running
+
+```bash
 curl http://127.0.0.1:8000/
-✅ Status
-Scraper working ✅
+```
 
-Data inserted into DB ✅
+---
 
-API running ✅
+## ✅ Status
 
-/ask endpoint working ✅
+- Scraper working ✅  
+- Data inserted into DB ✅  
+- API running ✅  
+- `/ask` endpoint working ✅  
 
-pgsql
-Copy code
-
-If you want, paste your **current `src/agents.py` output formatting**, and I’ll rewrite it so `/ask` returns a **clean, nicely formatted text response** (not JSON-looking blocks).
-::contentReference[oaicite:0]{index=0}
+---

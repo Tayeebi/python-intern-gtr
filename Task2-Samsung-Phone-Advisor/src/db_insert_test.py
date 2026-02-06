@@ -8,7 +8,7 @@ def get_html(url):
     return r.text
 
 def get_spec(soup, section, key):
-    # finds a value inside the GSMArena spec tables
+
     for table in soup.select("#specs-list table"):
         head = table.select_one("th")
         if not head or head.get_text(strip=True) != section:
@@ -35,14 +35,13 @@ display = (display_type + " | " + display_size).strip(" |")
 
 battery = get_spec(soup, "Battery", "Type")
 
-# camera can be Single/Dual/Triple/Quad depending on phone
 camera = ""
 for k in ["Quad", "Triple", "Dual", "Single"]:
     camera = get_spec(soup, "Main Camera", k)
     if camera:
         break
 
-memory = get_spec(soup, "Memory", "Internal")   # we’ll split into ram/storage next
+memory = get_spec(soup, "Memory", "Internal")   
 price = get_spec(soup, "Misc", "Price")
 
 print("name:", name)
